@@ -22,9 +22,9 @@ struct sdshdr {
 
 SDS遵循了C字符串以空字符结尾的惯例，所以在buf数组中结尾保存了空字符'\0'，且不计入len属性中，如下图所示：
 
-![1.1_SDS示例1](D:\study_note\maningning1.github.io\images\redis\1.1_SDS示例1.png)
+![1.1_SDS示例1](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.1_SDS%E7%A4%BA%E4%BE%8B1.png?raw=true)
 
-![2.2_SDS示例2](D:\study_note\maningning1.github.io\images\redis\2.2_SDS示例2.png)
+![2.2_SDS示例2](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.2_SDS%E7%A4%BA%E4%BE%8B2.png?raw=true)
 
 ### 特点
 
@@ -47,7 +47,7 @@ C字符串并不记录自身的长度信息，所以要获取C字符串的长度
   + 当SDS扩展后的长度小于1MB时，程序就会分配和len相同大小的未使用空间。比如修改后SDS的len变为了10字节，那么程序也会分配10字节的未使用空间，故free属性也变为10；
   + 当SDS扩展后长度大于等于1MB时，程序会分配1MB的未使用空间；
 
-  ![1.3_SDS空间预分配](D:\study_note\maningning1.github.io\images\redis\1.3_SDS空间预分配.png)
+  ![1.3_SDS空间预分配](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.3_SDS%E7%A9%BA%E9%97%B4%E9%A2%84%E5%88%86%E9%85%8D.png?raw=true)
 
 + **惰性空间释放**
 
@@ -95,7 +95,7 @@ typedef struct list {
 } list;
 ```
 
-![1.4_链表结构](D:\study_note\maningning1.github.io\images\redis\1.4_链表结构.png)
+![1.4_链表结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.4_%E9%93%BE%E8%A1%A8%E7%BB%93%E6%9E%84.png?raw=true)
 
 + listNode中包含prev和next指针，所以为双向链表；
 + list中包含head指针和tail指针，所以获取表头节点和表尾节点的复杂度为O(1)；
@@ -140,7 +140,7 @@ typedef struct dictEntry {
 } dictEntry;
 ```
 
-![1.5_哈希表结构](D:\study_note\maningning1.github.io\images\redis\1.5_哈希表结构.png)
+![1.5_哈希表结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.5_%E5%93%88%E5%B8%8C%E8%A1%A8%E7%BB%93%E6%9E%84.png?raw=true)
 
 #### 字典
 
@@ -159,7 +159,7 @@ typedef struct dict {
 }
 ```
 
-![1.6_字典结构](D:\study_note\maningning1.github.io\images\redis\1.6_字典结构.png)
+![1.6_字典结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.6_%E5%AD%97%E5%85%B8%E7%BB%93%E6%9E%84.png?raw=true)
 
 ### 键冲突
 
@@ -185,7 +185,7 @@ rehash动作不是一次性完成的，而是分多次渐进式地完成的，�
 
 跳表的实现是根据有序链表的基础发展起来的，对于一个有序链表，如果要查找某个节点，时间复杂度为O(n)，假如我们在每两个节点间新增指针连接成一个新的链表，节点就为原来的一半，也会减少查询时间。
 
-![1.7跳跃表结构](D:\study_note\maningning1.github.io\images\redis\1.7跳跃表结构.png)
+![1.7跳跃表结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.7%E8%B7%B3%E8%B7%83%E8%A1%A8%E7%BB%93%E6%9E%84.png?raw=true)
 
 如上图所示，查询操作就可以从最上层链表开始查找，时间复杂度就可以降低到O(log n)。
 
@@ -236,7 +236,7 @@ typedef struct zskiplist {
 
 其是一个链表，使用zsiplist记录整个链表的信息，表头指向一个32层的链表节点，其他的每个链表节点会记录各个节点的对象，分值，各层的信息等，其中level[]中保存每一层的前进指针及指针跨度，结构如下图所示：
 
-![1.8_Redis中的跳跃表结构](D:\study_note\maningning1.github.io\images\redis\1.8_Redis中的跳跃表结构.png)
+![1.8_Redis中的跳跃表结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.8_Redis%E4%B8%AD%E7%9A%84%E8%B7%B3%E8%B7%83%E8%A1%A8%E7%BB%93%E6%9E%84.png?raw=true)
 
 ## 整数集合
 
@@ -277,7 +277,7 @@ length保存元素数量，contents按从小到达顺序保存集合中的元素
 
 压缩列表数由一系列特殊编码的连续内存块组成的顺序性数据结构，其包含多个节点，每个节点可以保存一个字节数组或一个整数值。
 
-![1.9_压缩列表](D:\study_note\maningning1.github.io\images\redis\1.9_压缩列表.png)
+![1.9_压缩列表](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.9_%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8.png?raw=true)
 
 + zlbytes：记录整个压缩列表占用的内存字节数；
 + zltail：记录压缩列表尾结点距其实地址字节数，可以通过该偏移量直接定位尾结点地址；
@@ -286,7 +286,7 @@ length保存元素数量，contents按从小到达顺序保存集合中的元素
 
 压缩列表节点可以用于保存一个字节数组或者一个整数值，结构如下所示：
 
-![1.10_压缩列表节点](D:\study_note\maningning1.github.io\images\redis\1.10_压缩列表节点.png)
+![1.10_压缩列表节点](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.10_%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8%E8%8A%82%E7%82%B9.png?raw=true)
 
 + previous_entry_length：记录压缩列表中前一个节点的长度，根据该值可以得到前一节点的地址（相当于链表中的向前指针），这样程序就可以根据该值一直向前节点回溯；
 
