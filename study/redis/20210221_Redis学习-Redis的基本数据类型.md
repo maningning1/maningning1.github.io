@@ -100,11 +100,11 @@ OK
 
 raw编码的字符串对象结构如下所示：
 
-![2.01_raw编码的内存结构](D:\study_note\maningning1.github.io\images\redis\2.01_raw编码的内存结构.png)
+![2.01_raw编码的内存结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.01_raw%E7%BC%96%E7%A0%81%E7%9A%84%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png?raw=true)
 
 embstr编码的字符串对象结构如下所示：
 
-![2.02_embstr编码的内存结构](D:\study_note\maningning1.github.io\images\redis\2.02_embstr编码的内存结构.png)
+![2.02_embstr编码的内存结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.02_embstr%E7%BC%96%E7%A0%81%E7%9A%84%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png?raw=true)
 
 embstr编码的字符串对象采用一块连续的内存空间保存redisObject对象和sdshdr对象，故只需要分配一次内存空间，而raw编码的字符串对象需要调用两次内存分配函数。但是embstr每次重新分配空间时整个redisObject和sds都需要重新分配，故redis的embstr实现为只读。
 
@@ -141,7 +141,7 @@ OK
 
 ### 字符串命令
 
-![2.03_字符串命令](D:\study_note\maningning1.github.io\images\redis\2.03_字符串命令.png)
+![2.03_字符串命令](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.03_%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%91%BD%E4%BB%A4.png?raw=true)
 
 ## 列表对象
 
@@ -158,11 +158,11 @@ OK
 
 ziplist编码的列表对象结构如下所示：
 
-![2.04_ziplist编码的列表对象](D:\study_note\maningning1.github.io\images\redis\2.04_ziplist编码的列表对象.png)
+![2.04_ziplist编码的列表对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.04_ziplist%E7%BC%96%E7%A0%81%E7%9A%84%E5%88%97%E8%A1%A8%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 linkedlist编码的列表对象结构如下所示：
 
-![2.05_linkedlist编码的列表对象](D:\study_note\maningning1.github.io\images\redis\2.05_linkedlist编码的列表对象.png)
+![2.05_linkedlist编码的列表对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.05_linkedlist%E7%BC%96%E7%A0%81%E7%9A%84%E5%88%97%E8%A1%A8%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 其中，在linkedlist编码中每个链表的节点都是保存了一个字符串对象，字符串对象也是redis五种基本类型对象中唯一一个可以被其他对象嵌套的对象。
 
@@ -177,7 +177,7 @@ linkedlist编码的列表对象结构如下所示：
 
 ### 列表命令
 
-![2.06_列表命令](D:\study_note\maningning1.github.io\images\redis\2.06_列表命令.png)
+![2.06_列表命令](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.06_%E5%88%97%E8%A1%A8%E5%91%BD%E4%BB%A4.png?raw=true)
 
 ## 哈希对象
 
@@ -196,7 +196,7 @@ ziplist结构如下所示：
 
 hashtable结构如下所示：
 
-![2.08_hashtable编码的哈希对象](D:\study_note\maningning1.github.io\images\redis\2.08_hashtable编码的哈希对象.png)
+![2.08_hashtable编码的哈希对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.08_hashtable%E7%BC%96%E7%A0%81%E7%9A%84%E5%93%88%E5%B8%8C%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 ### 编码转换
 
@@ -220,7 +220,7 @@ OK
 
 ### 哈希命令
 
-![2.09_哈希命令](D:\study_note\maningning1.github.io\images\redis\2.09_哈希命令.png)
+![2.09_哈希命令](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.09_%E5%93%88%E5%B8%8C%E5%91%BD%E4%BB%A4.png?raw=true)
 
 ## 集合对象
 
@@ -241,11 +241,11 @@ OK
 
 intset编码结构如下所示：
 
-![2.10_intset编码的集合对象](D:\study_note\maningning1.github.io\images\redis\2.10_intset编码的集合对象.png)
+![2.10_intset编码的集合对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.10_intset%E7%BC%96%E7%A0%81%E7%9A%84%E9%9B%86%E5%90%88%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 hashtable编码结构如下所示：
 
-![2.11_hashtable编码的集合对象](D:\study_note\maningning1.github.io\images\redis\2.11_hashtable编码的集合对象.png)
+![2.11_hashtable编码的集合对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.11_hashtable%E7%BC%96%E7%A0%81%E7%9A%84%E9%9B%86%E5%90%88%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 ### 编码转换
 
@@ -258,7 +258,7 @@ hashtable编码结构如下所示：
 
 ### 集合命令
 
-![2.12_集合命令](D:\study_note\maningning1.github.io\images\redis\2.12_集合命令.png)
+![2.12_集合命令](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.12_%E9%9B%86%E5%90%88%E5%91%BD%E4%BB%A4.png?raw=true)
 
 ## 有序集合对象
 
@@ -273,11 +273,11 @@ hashtable编码结构如下所示：
 
 如果使用ziplist编码作为底层实现，则集合中每个元素使用紧挨在一起的压缩列表节点来保存，第一个节点保存元素成员，第二个保存元素分值，并且压缩列表内集合元素会按照分值从小到大进行排序，结构如下所示：
 
-![2.13_ziplist编码的有序集合对象](D:\study_note\maningning1.github.io\images\redis\2.13_ziplist编码的有序集合对象.png)
+![2.13_ziplist编码的有序集合对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.13_ziplist%E7%BC%96%E7%A0%81%E7%9A%84%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 而如果使用skiplist编码作为底层实现，在跳表中也是按照分值从小到大保存了所有集合元素，跳表节点的object属性保存元素成员，跳表节点score属性保存元素的分值；除此之外，结构中还使用了dict字典来保存有序集合成员到分值的映射，这样可以用O(1)的复杂度查找给定成员的分值，而且两种数据结构都会通过指针共享相同元素的成员和分值，不会浪费额外的内存，其结构如下所示（图中成员和分值是共享的数据）：
 
-![2.14_skiplist编码的有序集合对象](D:\study_note\maningning1.github.io\images\redis\2.14_skiplist编码的有序集合对象.png)
+![2.14_skiplist编码的有序集合对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.14_skiplist%E7%BC%96%E7%A0%81%E7%9A%84%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 ### 编码转换
 
@@ -290,4 +290,4 @@ hashtable编码结构如下所示：
 
 ### 有序集合命令
 
-![2.15_有序集合命令](D:\study_note\maningning1.github.io\images\redis\2.15_有序集合命令.png)
+![2.15_有序集合命令](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.15_%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88%E5%91%BD%E4%BB%A4.png?raw=true)
