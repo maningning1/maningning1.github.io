@@ -192,7 +192,7 @@ OK
 
 ziplist结构如下所示：
 
-![2.07_ziplist编码的哈希对象](D:\study_note\maningning1.github.io\images\redis\2.07_ziplist编码的哈希对象.png)
+![2.07_ziplist编码的哈希对象](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/2.07_ziplist%E7%BC%96%E7%A0%81%E7%9A%84%E5%93%88%E5%B8%8C%E5%AF%B9%E8%B1%A1.png?raw=true)
 
 hashtable结构如下所示：
 
