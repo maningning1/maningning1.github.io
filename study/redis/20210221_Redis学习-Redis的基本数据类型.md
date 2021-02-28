@@ -183,4 +183,111 @@ linkedlist编码的列表对象结构如下所示：
 
 ### 编码
 
-哈希对象的编码可以是ziplist或者hashtable
+哈希对象的编码可以是ziplist或者hashtable，当创建一个哈希对象后
+
+```shell
+127.0.0.1:6379> hmset hash_obj name "Tom" age 25 career "Programmer"
+OK
+```
+
+ziplist结构如下所示：
+
+![2.07_ziplist编码的哈希对象](D:\study_note\maningning1.github.io\images\redis\2.07_ziplist编码的哈希对象.png)
+
+hashtable结构如下所示：
+
+![2.08_hashtable编码的哈希对象](D:\study_note\maningning1.github.io\images\redis\2.08_hashtable编码的哈希对象.png)
+
+### 编码转换
+
+当哈希对象同时满足以下两个条件时，哈希对象使用ziplist编码：
+
++ 哈希对象报错的所有键值对的键和值长度都小于64字节；
++ 哈希对象报错的键值对数量小于512个；
+
+**注意**：可以通过`hash-max-ziplist-value`和`hash-max-ziplist-entries`参数修改。
+
+```shell
+127.0.0.1:6379> hmset hash_obj name "Tom" age 25 career "Programmer"
+OK
+127.0.0.1:6379> object encoding hash_obj
+"ziplist"
+127.0.0.1:6379> hset hash_obj name xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+(integer) 0
+127.0.0.1:6379> object encoding hash_obj
+"hashtable"
+```
+
+### 哈希命令
+
+![2.09_哈希命令](D:\study_note\maningning1.github.io\images\redis\2.09_哈希命令.png)
+
+## 集合对象
+
+### 编码
+
+集合对象的编码可以是intset或者hashtable，如下所示：
+
+```shell
+127.0.0.1:6379> sadd set_obj "apple" "banana" "cherry"
+(integer) 3
+127.0.0.1:6379> object encoding set_obj
+"hashtable"
+127.0.0.1:6379> sadd numbers 1 3 5
+(integer) 3
+127.0.0.1:6379> object encoding numbers
+"intset"
+```
+
+intset编码结构如下所示：
+
+![2.10_intset编码的集合对象](D:\study_note\maningning1.github.io\images\redis\2.10_intset编码的集合对象.png)
+
+hashtable编码结构如下所示：
+
+![2.11_hashtable编码的集合对象](D:\study_note\maningning1.github.io\images\redis\2.11_hashtable编码的集合对象.png)
+
+### 编码转换
+
+当集合对象同时满足以下两个条件时，采用intset编码：
+
++ 集合对象保存的所有元素都是整数值；
++ 集合对象保存元素数量不超过512个；
+
+**注意**：可以通过`set-max-intset-value`参数修改第二个参数。
+
+### 集合命令
+
+![2.12_集合命令](D:\study_note\maningning1.github.io\images\redis\2.12_集合命令.png)
+
+## 有序集合对象
+
+### 编码
+
+有序集合对象的编码可以是ziplist或者skiplist。
+
+```shell
+127.0.0.1:6379> zadd price 8.5 apple 5.0 banana 6.0 cherry
+(integer) 3
+```
+
+如果使用ziplist编码作为底层实现，则集合中每个元素使用紧挨在一起的压缩列表节点来保存，第一个节点保存元素成员，第二个保存元素分值，并且压缩列表内集合元素会按照分值从小到大进行排序，结构如下所示：
+
+![2.13_ziplist编码的有序集合对象](D:\study_note\maningning1.github.io\images\redis\2.13_ziplist编码的有序集合对象.png)
+
+而如果使用skiplist编码作为底层实现，在跳表中也是按照分值从小到大保存了所有集合元素，跳表节点的object属性保存元素成员，跳表节点score属性保存元素的分值；除此之外，结构中还使用了dict字典来保存有序集合成员到分值的映射，这样可以用O(1)的复杂度查找给定成员的分值，而且两种数据结构都会通过指针共享相同元素的成员和分值，不会浪费额外的内存，其结构如下所示（图中成员和分值是共享的数据）：
+
+![2.14_skiplist编码的有序集合对象](D:\study_note\maningning1.github.io\images\redis\2.14_skiplist编码的有序集合对象.png)
+
+### 编码转换
+
+当有序集合对象同时满足以下两个条件时，采用ziplist编码：
+
++ 有序集合对象保存的元素数量小于128个；
++ 有序集合报错的所有元素成员长度小于64字节；
+
+**注意**：可以通过`zset-max-ziplist-value`和`zset-max-ziplist-entries`参数修改。
+
+### 有序集合命令
+
+![2.15_有序集合命令](D:\study_note\maningning1.github.io\images\redis\2.15_有序集合命令.png)
