@@ -308,3 +308,82 @@ length保存元素数量，contents按从小到达顺序保存集合中的元素
   + 一字节、两字节、五字节长，且以00/01/10开头的是字节数组编码，数组长度由编码除去最高两位之后的其他位记录；
 
 + content：保存节点的值；
+
+### 连锁更新问题
+
+因为每个entry中保存的是**变长编码**，假设一个压缩列表中，其包含e1、e2、e3、e4…..，e1节点的大小为253字节，那么e2.prevrawlen的大小为1字节，如果此时在e2与e1之间插入了一个新节点e_new，e_new编码后的整体长度（包含e1的长度）为**254字节**，此时e2.prevrawlen就需要扩充为**5字节**；如果e2的整体长度变化又引起了e3.prevrawlen的存储长度变化，那么e3也需要扩…….如此递归直到表尾节点或者某一个节点的prevrawlen本身长度可以容纳前一个节点的变化。**其中每一次扩充都需要进行空间再分配操作**。删除节点亦是如此，只要引起了操作节点之后的节点的prevrawlen的变化，都可能引起连锁更新。
+
+## quicklist
+
+### 结构
+
+quicklist是一个由ziplist组成的双向链表，每个节点使用ziplist来保存数据，本质来说quicklist是保存着ziplist的双向链表（linkedlist）。
+
+
+
+![1.11_quicklist结构](D:\study_note\maningning1.github.io\images\redis\1.11_quicklist结构.png)
+
+```c
+typedef struct quicklistNode {
+    struct quicklistNode *prev; //上一个node节点
+    struct quicklistNode *next; //下一个node
+    unsigned char *zl;            //保存的数据 压缩前ziplist 压缩后压缩的数据
+    unsigned int sz;             /* ziplist size in bytes */
+    unsigned int count : 16;     /* count of items in ziplist */
+    unsigned int encoding : 2;   /* RAW==1 or LZF==2 */
+    unsigned int container : 2;  /* NONE==1 or ZIPLIST==2 */
+    unsigned int recompress : 1; /* was this node previous compressed? */
+    unsigned int attempted_compress : 1; /* node can't compress; too small */
+    unsigned int extra : 10; /* more bits to steal for future usage */
+} quicklistNode;
+```
+
+```c
+typedef struct quicklist {
+    quicklistNode *head;
+    quicklistNode *tail;
+    unsigned long count;        /* total count of all entries in all ziplists */
+    unsigned long len;          /* number of quicklistNodes */
+    int fill : QL_FILL_BITS;              /* fill factor for individual nodes */
+    unsigned int compress : QL_COMP_BITS; /* depth of end nodes not to compress;0=off */
+    unsigned int bookmark_count: QL_BM_BITS;
+    quicklistBookmark bookmarks[];
+} quicklist;
+```
+
+linkedlist和ziplist有如下特性，而quicklist则是他们的一个折中方案，结合了他们的优点：
+
++ linkedlist：插入复杂度低，但其内存开销大，且地址不连续，容易产生内存碎片；
++ ziplist：存储在一段连续的内存上，所以存储效率高，但是修改、插入、删除操作就会频繁申请和释放内存，所以ziplist很长时会转换为linkedlist。
+
+### 参数
+
+在quicklist中，相同的存储项可以包含在不同的结构中（比如存储12个数据项，可以每个quicklist包含3个节点，每个ziplist包含4个数据项；也可以是每个quicklist包含4个节点，每个ziplist包含3个数据项），所以在quicklist中有如下特点：
+
++ 每个quicklist节点的ziplist越短，则内存碎片越多，这样就可能会退化为一个linkedlist；
++ 每个quicklist节点的ziplist越长，则分配大块连续内存空间的难度就越大，这样就可能退化成一个ziplist；
+
+所以，在quicklist中redis提供了`list-max-ziplist-size`和`list-compress-depth`来根据情况调整。
+
++ `list-max-ziplist-size`
+  + 当取正值时代限定每个quicklist节点上ziplist的长度，当其为4时表示每个quicklistNode节点上最多只能有4个ziplist；
+  + 当取负数时只能取-1~-5这五个值：
+    + -5：每个quicklist节点上的ziplist大小不能超过64Kb；
+    + -4：每个quicklist节点上的ziplist大小不能超过32Kb；
+    + -3：每个quicklist节点上的ziplist大小不能超过16Kb；
+    + -2：每个quicklist节点上的ziplist大小不能超过8Kb；
+    + -1：每个quicklist节点上的ziplist大小不能超过4Kb；
+
++ `list-compress-depth`
+
+  当列表很长时，中间数据被访问的频率就会比较低，该参数可以将中间数据节点进行压缩。
+
+  + 0：不压缩，redis的默认值；
+
+  + 1：表示quicklist两端各有一个节点不压缩；
+
+  + 2：表示quicklist两端各有两个节点不压缩；
+
+    ...
+
+  + n：表示quicklist两端各有n个节点不压缩；

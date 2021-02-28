@@ -73,3 +73,114 @@ OK
 
 ## 字符串对象
 
+### 编码
+
+字符串对象的编码可以是int、raw、embstr。
+
+```shell
+127.0.0.1:6379> set str_obj 1
+OK
+127.0.0.1:6379> OBJECT ENCODING str_obj
+"int"
+127.0.0.1:6379> set str_obj "hello"
+OK
+127.0.0.1:6379> OBJECT ENCODING str_obj
+"embstr"
+127.0.0.1:6379> set str_obj "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+OK
+127.0.0.1:6379> OBJECT ENCODING str_obj
+"raw"
+```
+
++ int：当字符串对象中保存的都是整数值时，采用int编码保存；
++ embstr：其是一种保存短字符串的一种优化编码，当对象中字符串长度小于44字节（redis3.2版本前为39字节）时，采用embstr保存；
++ raw：当对象中字符串长度大于44字节（redis3.2版本前为39字节）时，采用raw保存；
+
+### raw与embstr的区别
+
+raw编码的字符串对象结构如下所示：
+
+![2.01_raw编码的内存结构](D:\study_note\maningning1.github.io\images\redis\2.01_raw编码的内存结构.png)
+
+embstr编码的字符串对象结构如下所示：
+
+![2.02_embstr编码的内存结构](D:\study_note\maningning1.github.io\images\redis\2.02_embstr编码的内存结构.png)
+
+embstr编码的字符串对象采用一块连续的内存空间保存redisObject对象和sdshdr对象，故只需要分配一次内存空间，而raw编码的字符串对象需要调用两次内存分配函数。但是embstr每次重新分配空间时整个redisObject和sds都需要重新分配，故redis的embstr实现为只读。
+
+### 编码转换
+
++ 当int编码保存的值不再是整数，或者大小超过long的范围，则会自动转换为raw；
++ redis中对应浮点数类型也是作为字符串保存，在进行计算时将其转换为浮点数类型；
++ 因为embstr是只读的，所以对其进行修改后，都会转换为raw对象，无论是否达到44字节；
+
+```shell
+127.0.0.1:6379> set pi 3.14
+OK
+127.0.0.1:6379> OBJECT ENCODING pi
+"embstr"
+127.0.0.1:6379> set num 100
+OK
+127.0.0.1:6379> OBJECT ENCODING num
+"int"
+127.0.0.1:6379> append num " hello"
+(integer) 9
+127.0.0.1:6379> get num
+"100 hello"
+127.0.0.1:6379> OBJECT ENCODING num
+"raw"
+127.0.0.1:6379> set msg "hello"
+OK
+127.0.0.1:6379> OBJECT ENCODING msg
+"embstr"
+127.0.0.1:6379> append msg " redis"
+(integer) 11
+127.0.0.1:6379> OBJECT ENCODING msg
+"raw"
+```
+
+### 字符串命令
+
+![2.03_字符串命令](D:\study_note\maningning1.github.io\images\redis\2.03_字符串命令.png)
+
+## 列表对象
+
+### 编码
+
+在redis3.2之前，列表对象的编码可以是ziplist、linkedlist；而在redis3.2之后，列表对象的底层全部都由quicklist实现。所以本文先介绍在redis3.2之前列表对象的基本属性。
+
+当创建一个列表对象后，
+
+```shell
+127.0.0.1:6379> rpush list_obj 1 "three" 5
+(integer) 3
+```
+
+ziplist编码的列表对象结构如下所示：
+
+![2.04_ziplist编码的列表对象](D:\study_note\maningning1.github.io\images\redis\2.04_ziplist编码的列表对象.png)
+
+linkedlist编码的列表对象结构如下所示：
+
+![2.05_linkedlist编码的列表对象](D:\study_note\maningning1.github.io\images\redis\2.05_linkedlist编码的列表对象.png)
+
+其中，在linkedlist编码中每个链表的节点都是保存了一个字符串对象，字符串对象也是redis五种基本类型对象中唯一一个可以被其他对象嵌套的对象。
+
+### 编码转换
+
+当列表对象同时满足以下两个条件时，使用ziplist编码：
+
++ 列表对象报错的所有字符串元素长度都小于64字节；
++ 列表对象报错的元素数量小于512个；
+
+**注意**：可以通过`list-max-ziplist-value`和`list-max-ziplist-entries`参数修改。
+
+### 列表命令
+
+![2.06_列表命令](D:\study_note\maningning1.github.io\images\redis\2.06_列表命令.png)
+
+## 哈希对象
+
+### 编码
+
+哈希对象的编码可以是ziplist或者hashtable
