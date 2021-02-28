@@ -319,9 +319,7 @@ length保存元素数量，contents按从小到达顺序保存集合中的元素
 
 quicklist是一个由ziplist组成的双向链表，每个节点使用ziplist来保存数据，本质来说quicklist是保存着ziplist的双向链表（linkedlist）。
 
-
-
-![1.11_quicklist结构](D:\study_note\maningning1.github.io\images\redis\1.11_quicklist结构.png)
+![1.11_quicklist结构](https://github.com/maningning1/maningning1.github.io/blob/main/images/redis/1.11_quicklist%E7%BB%93%E6%9E%84.png?raw=true)
 
 ```c
 typedef struct quicklistNode {
